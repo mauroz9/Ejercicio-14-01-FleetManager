@@ -49,4 +49,14 @@ public class Vehiculo {
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
+
+    public void addAsignacion(Asignacion asignacion){
+        asignaciones.add(asignacion);
+        asignacion.setVehiculo(this);
+    }
+
+    public void removeAsignacion(Asignacion asignacion){
+        asignaciones.remove(asignacion);
+        asignacion.setVehiculo(null);
+    }
 }

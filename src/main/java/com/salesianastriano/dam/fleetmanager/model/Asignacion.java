@@ -46,4 +46,8 @@ public class Asignacion {
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
+
+    public void cerrarAsignacion(){
+        this.setFechaFin(LocalDateTime.now());
+    }
 }
