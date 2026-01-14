@@ -59,4 +59,12 @@ public class Vehiculo {
         asignaciones.remove(asignacion);
         asignacion.setVehiculo(null);
     }
+
+    public void cambiarEstado(Estado estado){
+        this.setEstado(estado);
+    }
+
+    public void actualizarKilometraje(Double kilometraje){
+        this.setKmActuales(kilometraje);
+    }
 }

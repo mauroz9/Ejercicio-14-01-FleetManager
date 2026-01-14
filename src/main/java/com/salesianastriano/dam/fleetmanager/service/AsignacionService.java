@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,10 @@ public class AsignacionService {
     private final ConductorRepostory conductorRepostory;
     private final VehiculoRepository vehiculoRepository;
 
+    public List<Asignacion> getAll(){
+        return asignacionRepository.findAll();
+    }
+
     public Asignacion crearAsignacion(CreateAsignacionRequest dto){
         Conductor conductor = conductorRepostory.findById(dto.idConductor()).orElseThrow(() -> new RuntimeException("Conductor no encontrado"));
         Vehiculo vehiculo = vehiculoRepository.findById(dto.idVehiculo()).orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
@@ -29,11 +34,11 @@ public class AsignacionService {
             throw new RuntimeException("No puedes crear una asignación en el pasado");
         }
 
-        if(vehiculo.getAsignaciones().equals(Estado.ASIGNADO) || vehiculo.getAsignaciones().equals(Estado.EN_MANTENIMIENTO)){
+        if(vehiculo.getEstado().equals(Estado.ASIGNADO) || vehiculo.getEstado().equals(Estado.EN_MANTENIMIENTO)){
             throw new RuntimeException("No puedes asignar un vehiclo ya asignado o en mantenimiento");
         }
 
-        if(vehiculoRepository.existsByAsignacionesFechaFinNull()){
+        if(asignacionRepository.existsByVehiculoIdAndFechaFinIsNull(dto.idVehiculo())){
             throw new RuntimeException("Ya existe una asignación activa");
         }
 
@@ -49,13 +54,17 @@ public class AsignacionService {
         conductor.addAsignacion(asignacion);
         vehiculo.addAsignacion(asignacion);
 
+        vehiculo.cambiarEstado(Estado.ASIGNADO);
+
         return asignacionRepository.save(asignacion);
     }
 
     public Asignacion cerrarAsignacion(Long asignacionId){
         Asignacion asignacion = asignacionRepository.findById(asignacionId).orElseThrow(() -> new RuntimeException("Asignación no encontrada"));
-
         asignacion.cerrarAsignacion();
+
+        asignacion.getVehiculo().cambiarEstado(Estado.DISPONIBLE);
+
         return asignacionRepository.save(asignacion);
     }
 }
