@@ -42,7 +42,9 @@ public class AsignacionService {
             throw new RuntimeException("Ya existe una asignación activa");
         }
 
-
+        if(asignacionRepository.existsByConductorIdAndFechaFinIsNull(dto.idConductor())){
+            throw new RuntimeException("El conductor ya tiene una asignación activa");
+        }
 
         Asignacion asignacion = Asignacion.builder()
                 .conductor(conductor)
